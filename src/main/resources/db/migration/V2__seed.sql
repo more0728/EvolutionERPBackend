@@ -67,14 +67,14 @@ INSERT INTO evo.mmaterial(cod_material, nom_material, c_unidad) VALUES
 ('3000000149','N.O.500 ACEITE BASE GI','L')
 ON CONFLICT DO NOTHING;
 
--- Roles y usuarios (seguridad)
-INSERT INTO evo.app_role(nom_role) VALUES ('ADMIN'),('COMPRAS'),('ALMACEN'),('CONSULTA') ON CONFLICT DO NOTHING;
-INSERT INTO evo.app_user(username, password_hash, nom_user) VALUES
-('master','$2a$10$fakehashmaster','MASTER'),
-('admin','$2a$10$fakehashadmin','ADMINISTRADOR')
+-- Roles y usuarios (seguridad) - SOLO EVO
+-- master/master123 , admin/admin123 (BCrypt real)
+INSERT INTO evo.users(username, password, enabled) VALUES
+('master','$2b$10$N6hOF7tVRH8fBVg0dzSYe.3jWqh8oVSysxP7pxNyF5WGcBELOQrL.',true),
+('admin','$2b$10$KuSw.83//3rbPN1lvmTYMOMC8u/d5ER9agSHOAkv.70usjAjH.xS.',true)
+ON CONFLICT (username) DO UPDATE SET password=EXCLUDED.password, enabled=true;
+INSERT INTO evo.roles(rol, user_id) SELECT 'ADMIN', id FROM evo.users WHERE username IN ('master','admin')
 ON CONFLICT DO NOTHING;
-INSERT INTO evo.app_user_role(username, id_role) VALUES ('master',1),('admin',1) ON CONFLICT DO NOTHING;
-INSERT INTO evo.app_user_sociedad(username, cod_sociedad) VALUES ('master','100'),('master','A13'),('master','1100'),('admin','100') ON CONFLICT DO NOTHING;
 
 -- Requisicion de ejemplo (Doc 0000000024 del mock)
 INSERT INTO evo.mmrequis_cab(cod_sociedad, nro_doc, fec_doc, fec_req, ccod_cencos, ccod_person, lugar_entr, ccod_proveedor, tip_prio, observ, estado, user_sis, user_mod)

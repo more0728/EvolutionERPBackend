@@ -6,9 +6,8 @@
 
 
 
--- Limpieza para re-ejecucion
-DROP SCHEMA IF EXISTS evo CASCADE;
-CREATE SCHEMA evo;
+-- Flyway gestiona el versionado: no borrar schema en migraciones
+CREATE SCHEMA IF NOT EXISTS evo;
 SET search_path TO evo, public;
 
 -- ============================================
@@ -143,7 +142,7 @@ CREATE INDEX idx_cab_person ON evo.mmrequis_cab(ccod_person);
 --     Filas "*" del mock se guardan en observ
 -- ============================================
 CREATE TABLE evo.mmrequis_det (
-  cod_sociedad        VARCHAR(3) NOT NULL,
+  cod_sociedad        VARCHAR(10) NOT NULL,
   nro_item            NUMERIC(18,0) NOT NULL,
   nro_doc             VARCHAR(12) NOT NULL,
   cod_material        VARCHAR(42) REFERENCES evo.mmaterial(cod_material),
@@ -161,29 +160,20 @@ CREATE INDEX idx_det_material ON evo.mmrequis_det(cod_material);
 CREATE INDEX idx_det_estado ON evo.mmrequis_det(estado);
 
 -- ============================================
--- 10. SEGURIDAD (Login + seleccion sociedad)
+-- 10. SEGURIDAD (Login + seleccion sociedad) - SOLO EVO
 --     Arquitectura_BackEnd.pdf: User/Role/Menu
 -- ============================================
-CREATE TABLE evo.app_user (
-  username      VARCHAR(50) PRIMARY KEY,
-  password_hash VARCHAR(255) NOT NULL,
-  nom_user      VARCHAR(100),
-  enabled       BOOLEAN DEFAULT true,
-  user_sis_date TIMESTAMP DEFAULT now()
+CREATE TABLE evo.users (
+  id BIGSERIAL PRIMARY KEY,
+  username VARCHAR(30) UNIQUE NOT NULL,
+  password VARCHAR(200) NOT NULL,
+  enabled BOOLEAN DEFAULT true
 );
-CREATE TABLE evo.app_role (
-  id_role   SERIAL PRIMARY KEY,
-  nom_role  VARCHAR(50) UNIQUE NOT NULL -- ADMIN, COMPRAS, ALMACEN
-);
-CREATE TABLE evo.app_user_role (
-  username VARCHAR(50) REFERENCES evo.app_user(username) ON DELETE CASCADE,
-  id_role  INTEGER REFERENCES evo.app_role(id_role) ON DELETE CASCADE,
-  PRIMARY KEY (username, id_role)
-);
-CREATE TABLE evo.app_user_sociedad (
-  username     VARCHAR(50) REFERENCES evo.app_user(username) ON DELETE CASCADE,
-  cod_sociedad VARCHAR(10) REFERENCES evo.esociedad(cod_sociedad),
-  PRIMARY KEY (username, cod_sociedad)
+CREATE TABLE evo.roles (
+  id BIGSERIAL PRIMARY KEY,
+  rol VARCHAR(50) NOT NULL,
+  user_id BIGINT NOT NULL REFERENCES evo.users(id) ON DELETE CASCADE,
+  UNIQUE(user_id, rol)
 );
 
 -- ============================================
@@ -340,18 +330,4 @@ LEFT JOIN evo.mmrequis_det d ON d.cod_sociedad=c.cod_sociedad AND d.nro_doc=c.nr
 LEFT JOIN evo.mmaterial m ON m.cod_material=d.cod_material;
 
 
--- ============================================
--- TABLAS SEGURIDAD (Users/Roles) en public para JWT
--- ============================================
-CREATE TABLE IF NOT EXISTS public.users (
-  id BIGSERIAL PRIMARY KEY,
-  username VARCHAR(30) UNIQUE NOT NULL,
-  password VARCHAR(200) NOT NULL,
-  enabled BOOLEAN DEFAULT true
-);
-CREATE TABLE IF NOT EXISTS public.roles (
-  id BIGSERIAL PRIMARY KEY,
-  rol VARCHAR(50) NOT NULL,
-  user_id BIGINT NOT NULL REFERENCES public.users(id) ON DELETE CASCADE,
-  UNIQUE(user_id, rol)
-);
+-- NOTA: seguridad vive SOLO en evo.users / evo.roles (sin tablas en public).
