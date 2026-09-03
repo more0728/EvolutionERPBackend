@@ -3,27 +3,31 @@ package com.example.evolutionerp.securities;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
+import io.jsonwebtoken.io.Decoders;
+import io.jsonwebtoken.security.Keys;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Component;
 
-import javax.crypto.spec.SecretKeySpec;
-import java.util.Base64;
+import javax.crypto.SecretKey;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
-//Clase 1
 @Component
-public class JwtTokenUtil{
-
-
-    private static final long TOKEN_VALIDITY = 5 * 60 * 60 * 1000; // 5 horas
+public class JwtTokenUtil {
 
     @Value("${jwt.secret}")
     private String secret;
+
+    @Value("${jwt.expiration:18000000}")
+    private Long expiration;
+
+    private SecretKey getSigningKey() {
+        return Keys.hmacShaKeyFor(Decoders.BASE64.decode(secret));
+    }
 
     public String getUsernameFromToken(String token) {
         return getClaim(token, Claims::getSubject);
@@ -33,73 +37,52 @@ public class JwtTokenUtil{
         return getClaim(token, Claims::getExpiration);
     }
 
-    public <T> T getClaim(
-            String token,
-            Function<Claims, T> resolver
-    ) {
+    public <T> T getClaim(String token, Function<Claims, T> resolver) {
         return resolver.apply(getAllClaims(token));
     }
 
     private Claims getAllClaims(String token) {
-        return Jwts.parser()
-                .setSigningKey(secret)
+        return Jwts.parserBuilder()
+                .setSigningKey(getSigningKey())
                 .build()
                 .parseClaimsJws(token)
                 .getBody();
     }
 
     private boolean isExpired(String token) {
-        return getExpirationDate(token)
-                .before(new Date());
+        return getExpirationDate(token).before(new Date());
     }
 
     public String generateToken(UserDetails userDetails) {
-
         Map<String, Object> claims = new HashMap<>();
-
-        claims.put(
-                "roles",
-                userDetails.getAuthorities()
-                        .stream()
-                        .map(auth -> auth.getAuthority())
-                        .collect(Collectors.joining(","))
-        );
-
-        return createToken(
-                claims,
-                userDetails.getUsername()
-        );
+        claims.put("roles", userDetails.getAuthorities().stream().map(a -> a.getAuthority()).collect(Collectors.joining(",")));
+        return createToken(claims, userDetails.getUsername());
     }
 
-    private String createToken(
-            Map<String, Object> claims,
-            String username
-    ) {
+    public String generateTokenWithSociedad(UserDetails userDetails, String codSociedad) {
+        Map<String, Object> claims = new HashMap<>();
+        claims.put("roles", userDetails.getAuthorities().stream().map(a -> a.getAuthority()).collect(Collectors.joining(",")));
+        claims.put("sociedad", codSociedad);
+        return createToken(claims, userDetails.getUsername());
+    }
 
+    private String createToken(Map<String, Object> claims, String username) {
         Date now = new Date();
-        Date expiration =
-                new Date(now.getTime() + TOKEN_VALIDITY);
-
+        Date exp = new Date(now.getTime() + expiration);
         return Jwts.builder()
                 .setClaims(claims)
                 .setSubject(username)
                 .setIssuedAt(now)
-                .setExpiration(expiration)
-                .signWith(
-                        new SecretKeySpec(
-                                Base64.getDecoder().decode(secret),
-                                SignatureAlgorithm.HS512.getJcaName()
-                        )
-                )
+                .setExpiration(exp)
+                .signWith(getSigningKey(), SignatureAlgorithm.HS512)
                 .compact();
     }
 
-    public boolean validateToken(
-            String token,
-            UserDetails userDetails
-    ) {
-        return getUsernameFromToken(token)
-                .equals(userDetails.getUsername())
-                && !isExpired(token);
+    public boolean validateToken(String token, UserDetails userDetails) {
+        return getUsernameFromToken(token).equals(userDetails.getUsername()) && !isExpired(token);
+    }
+
+    public String getSociedadFromToken(String token) {
+        return getClaim(token, c -> c.get("sociedad", String.class));
     }
 }
