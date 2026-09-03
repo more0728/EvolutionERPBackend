@@ -1,8 +1,8 @@
 
 package com.evolutionerp.service;
-import com.evolutionerp.model.BProveedor;
-import com.evolutionerp.model.EPersonal;
-import com.evolutionerp.model.Mmaterial;
+import com.evolutionerp.entities.BProveedor;
+import com.evolutionerp.entities.EPersonal;
+import com.evolutionerp.entities.Mmaterial;
 import java.util.List;
 public interface ListasService {
   List<EPersonal> listarPersonal(String codSoc);
