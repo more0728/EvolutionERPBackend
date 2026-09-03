@@ -5,7 +5,7 @@ import jakarta.persistence.*;
 import java.io.Serializable;
 
 @Entity
-@Table(name = "roles", uniqueConstraints = {@UniqueConstraint(columnNames = {"user_id", "rol"})})
+@Table(schema = "public", name = "roles", uniqueConstraints = { @UniqueConstraint(columnNames = { "user_id", "rol" }) })
 public class Role implements Serializable {
 
     @Id
@@ -17,7 +17,6 @@ public class Role implements Serializable {
     @ManyToOne
     @JoinColumn(name = "user_id", nullable = false)
     private Users user;
-
 
     public Users getUser() {
         return user;

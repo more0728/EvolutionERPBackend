@@ -10,17 +10,14 @@ import org.springframework.stereotype.Service;
 import com.evolutionerp.entities.Users;
 import com.evolutionerp.repositories.IUserRepository;
 
-
 import java.util.ArrayList;
 import java.util.List;
-
 
 //Clase 2
 @Service
 public class JwtUserDetailsService implements UserDetailsService {
     @Autowired
     private IUserRepository repo;
-
 
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
@@ -36,7 +33,8 @@ public class JwtUserDetailsService implements UserDetailsService {
             roles.add(new SimpleGrantedAuthority(rol.getRol()));
         });
 
-        UserDetails ud = new org.springframework.security.core.userdetails.User(user.getUsername(), user.getPassword(), user.getEnabled(), true, true, true, roles);
+        UserDetails ud = new org.springframework.security.core.userdetails.User(user.getUsername(), user.getPassword(),
+                user.getEnabled(), true, true, true, roles);
 
         return ud;
     }

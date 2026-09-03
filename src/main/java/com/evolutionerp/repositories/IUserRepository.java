@@ -8,17 +8,15 @@ import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 import com.evolutionerp.entities.Users;
 
-
 @Repository
 public interface IUserRepository extends JpaRepository<Users, Long> {
     public Users findOneByUsername(String username);
 
-    //BUSCAR POR NOMBRE
+    // BUSCAR POR NOMBRE
     @Query("select count(u.username) from Users u where u.username =:username")
     public int buscarUsername(@Param("username") String nombre);
 
-
-    //INSERTAR ROLES
+    // INSERTAR ROLES
     @Transactional
     @Modifying
     @Query(value = "insert into roles (rol, user_id) VALUES (:rol, :user_id)", nativeQuery = true)

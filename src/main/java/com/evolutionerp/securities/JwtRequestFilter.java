@@ -1,6 +1,5 @@
 package com.evolutionerp.securities;
 
-
 import io.jsonwebtoken.ExpiredJwtException;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
@@ -47,7 +46,6 @@ public class JwtRequestFilter extends OncePerRequestFilter {
             System.out.println(requestTokenHeader);
         }
 
-
         // Once we get the token validate it.
         if (username != null && SecurityContextHolder.getContext().getAuthentication() == null) {
 
@@ -69,6 +67,5 @@ public class JwtRequestFilter extends OncePerRequestFilter {
         }
         chain.doFilter(request, response);
     }
-
 
 }

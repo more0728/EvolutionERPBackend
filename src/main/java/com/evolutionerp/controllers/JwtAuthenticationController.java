@@ -1,5 +1,6 @@
 
 package com.evolutionerp.controllers;
+
 import com.evolutionerp.dtos.JwtRequestDTO;
 import com.evolutionerp.dtos.JwtResponseSociedadDTO;
 import com.evolutionerp.repositories.EsociedadRepo;
@@ -12,18 +13,23 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
 import java.util.stream.Collectors;
-@RestController @CrossOrigin @RequiredArgsConstructor
+
+@RestController
+@CrossOrigin
+@RequiredArgsConstructor
 public class JwtAuthenticationController {
   private final AuthenticationManager authenticationManager;
   private final JwtTokenUtil jwtTokenUtil;
   private final JwtUserDetailsService userDetailsService;
   private final EsociedadRepo socRepo;
-  @PostMapping({"/login","/api/auth/login"})
+
+  @PostMapping({ "/login", "/api/auth/login" })
   public ResponseEntity<JwtResponseSociedadDTO> login(@RequestBody JwtRequestDTO req) throws Exception {
     authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(req.getUsername(), req.getPassword()));
-    UserDetails ud=userDetailsService.loadUserByUsername(req.getUsername());
-    String token=jwtTokenUtil.generateToken(ud);
-    var socs=socRepo.findAll().stream().map(s->s.getCodSociedad()).collect(Collectors.toList());
-    return ResponseEntity.ok(new JwtResponseSociedadDTO(token, req.getUsername(), socs, socs.isEmpty()?null:socs.get(0)));
+    UserDetails ud = userDetailsService.loadUserByUsername(req.getUsername());
+    String token = jwtTokenUtil.generateToken(ud);
+    var socs = socRepo.findAll().stream().map(s -> s.getCodSociedad()).collect(Collectors.toList());
+    return ResponseEntity
+        .ok(new JwtResponseSociedadDTO(token, req.getUsername(), socs, socs.isEmpty() ? null : socs.get(0)));
   }
 }

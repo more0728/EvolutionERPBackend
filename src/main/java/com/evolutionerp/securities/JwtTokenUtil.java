@@ -55,13 +55,15 @@ public class JwtTokenUtil {
 
     public String generateToken(UserDetails userDetails) {
         Map<String, Object> claims = new HashMap<>();
-        claims.put("roles", userDetails.getAuthorities().stream().map(a -> a.getAuthority()).collect(Collectors.joining(",")));
+        claims.put("roles",
+                userDetails.getAuthorities().stream().map(a -> a.getAuthority()).collect(Collectors.joining(",")));
         return createToken(claims, userDetails.getUsername());
     }
 
     public String generateTokenWithSociedad(UserDetails userDetails, String codSociedad) {
         Map<String, Object> claims = new HashMap<>();
-        claims.put("roles", userDetails.getAuthorities().stream().map(a -> a.getAuthority()).collect(Collectors.joining(",")));
+        claims.put("roles",
+                userDetails.getAuthorities().stream().map(a -> a.getAuthority()).collect(Collectors.joining(",")));
         claims.put("sociedad", codSociedad);
         return createToken(claims, userDetails.getUsername());
     }
