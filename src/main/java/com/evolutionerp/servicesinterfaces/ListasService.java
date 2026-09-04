@@ -1,5 +1,5 @@
 
-package com.evolutionerp.service;
+package com.evolutionerp.servicesinterfaces;
 
 import com.evolutionerp.entities.BProveedor;
 import com.evolutionerp.entities.EPersonal;

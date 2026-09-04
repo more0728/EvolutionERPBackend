@@ -2,7 +2,7 @@
 package com.evolutionerp.servicesimplements;
 
 import com.evolutionerp.repositories.IGenericRepo;
-import com.evolutionerp.service.ICRUD;
+import com.evolutionerp.servicesinterfaces.ICRUD;
 import java.util.List;
 
 public abstract class CRUDImpl<T, ID> implements ICRUD<T, ID> {

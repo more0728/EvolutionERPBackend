@@ -5,14 +5,6 @@ public class JwtRequestDTO {
 	private String password;
 
 	public JwtRequestDTO() {
-		super();
-		// TODO Auto-generated constructor stub
-	}
-
-	public JwtRequestDTO(String username, String password) {
-		super();
-		this.username = username;
-		this.password = password;
 	}
 
 	public String getUsername() {

@@ -1,5 +1,5 @@
 
-package com.evolutionerp.service;
+package com.evolutionerp.servicesinterfaces;
 
 import java.util.List;
 

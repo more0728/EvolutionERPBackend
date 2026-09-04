@@ -5,8 +5,7 @@ import com.evolutionerp.dtos.MmRequisCabDTO;
 import com.evolutionerp.dtos.EcCostoDTO;
 import com.evolutionerp.dtos.EconstantesDTO;
 import com.evolutionerp.dtos.EsociedadDTO;
-import com.evolutionerp.service.RequisicionService;
-import lombok.RequiredArgsConstructor;
+import com.evolutionerp.servicesinterfaces.RequisicionService;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.format.annotation.DateTimeFormat;
@@ -19,9 +18,12 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/api/requisiciones")
-@RequiredArgsConstructor
 public class RequisicionController {
   private final RequisicionService service;
+
+  public RequisicionController(RequisicionService service) {
+    this.service = service;
+  }
 
   @PostMapping
   public ResponseEntity<MmRequisCabDTO> crear(@Valid @RequestBody MmRequisCabDTO dto, Authentication auth) {

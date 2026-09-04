@@ -2,7 +2,7 @@
 package com.evolutionerp.repositories;
 
 import com.evolutionerp.entities.EcCosto;
-import com.evolutionerp.entities.EcCostoId;
+import com.evolutionerp.entities.EcCosto.EcCostoId;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import java.util.List;
