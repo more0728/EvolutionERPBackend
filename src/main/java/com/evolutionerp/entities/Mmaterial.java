@@ -1,16 +1,9 @@
-
 package com.evolutionerp.entities;
 
 import jakarta.persistence.*;
-import lombok.*;
 
 @Entity
 @Table(schema = "evo", name = "mmaterial")
-@Getter
-@Setter
-@NoArgsConstructor
-@AllArgsConstructor
-@Builder
 public class Mmaterial {
   @Id
   @Column(name = "cod_material", length = 42)
@@ -21,6 +14,48 @@ public class Mmaterial {
   private String cUnidad;
   @Column(length = 12)
   private String opcMant = "ACTIVO";
+
+  public Mmaterial() {
+  }
+
+  public Mmaterial(String codMaterial, String nomMaterial, String cUnidad, String opcMant) {
+    this.codMaterial = codMaterial;
+    this.nomMaterial = nomMaterial;
+    this.cUnidad = cUnidad;
+    this.opcMant = opcMant;
+  }
+
+  public String getCodMaterial() {
+    return codMaterial;
+  }
+
+  public void setCodMaterial(String codMaterial) {
+    this.codMaterial = codMaterial;
+  }
+
+  public String getNomMaterial() {
+    return nomMaterial;
+  }
+
+  public void setNomMaterial(String nomMaterial) {
+    this.nomMaterial = nomMaterial;
+  }
+
+  public String getCUnidad() {
+    return cUnidad;
+  }
+
+  public void setCUnidad(String cUnidad) {
+    this.cUnidad = cUnidad;
+  }
+
+  public String getOpcMant() {
+    return opcMant;
+  }
+
+  public void setOpcMant(String opcMant) {
+    this.opcMant = opcMant;
+  }
 
   @PrePersist
   @PreUpdate

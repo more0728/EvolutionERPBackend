@@ -1,35 +1,86 @@
-
 package com.evolutionerp.controllers;
 
-import com.evolutionerp.dtos.JwtRequestDTO;
-import com.evolutionerp.dtos.JwtResponseSociedadDTO;
-import com.evolutionerp.repositories.EsociedadRepo;
-import com.evolutionerp.securities.JwtTokenUtil;
-import com.evolutionerp.servicesimplements.JwtUserDetailsService;
-import lombok.RequiredArgsConstructor;
+import java.util.List;
+
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.BadCredentialsException;
+import org.springframework.security.authentication.DisabledException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.web.bind.annotation.*;
-import java.util.stream.Collectors;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RestController;
 
+import com.evolutionerp.dtos.JwtRequestDTO;
+import com.evolutionerp.dtos.JwtResponseDTO;
+import com.evolutionerp.dtos.JwtResponseSociedadDTO;
+import com.evolutionerp.securities.JwtTokenUtil;
+import com.evolutionerp.servicesimplements.JwtUserDetailsService;
+import com.evolutionerp.servicesinterfaces.RequisicionService;
+
+// Estilo KitchenHack: POST /login → 200 {jwttoken}. Sin @CrossOrigin (CORS global).
+// POST /api/auth/login se mantiene por compatibilidad ERP (incluye sociedades).
 @RestController
-@CrossOrigin
-@RequiredArgsConstructor
 public class JwtAuthenticationController {
-  private final AuthenticationManager authenticationManager;
-  private final JwtTokenUtil jwtTokenUtil;
-  private final JwtUserDetailsService userDetailsService;
-  private final EsociedadRepo socRepo;
 
-  @PostMapping({ "/login", "/api/auth/login" })
-  public ResponseEntity<JwtResponseSociedadDTO> login(@RequestBody JwtRequestDTO req) throws Exception {
-    authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(req.getUsername(), req.getPassword()));
-    UserDetails ud = userDetailsService.loadUserByUsername(req.getUsername());
-    String token = jwtTokenUtil.generateToken(ud);
-    var socs = socRepo.findAll().stream().map(s -> s.getCodSociedad()).collect(Collectors.toList());
-    return ResponseEntity
-        .ok(new JwtResponseSociedadDTO(token, req.getUsername(), socs, socs.isEmpty() ? null : socs.get(0)));
-  }
+    private final AuthenticationManager authenticationManager;
+    private final JwtTokenUtil jwtTokenUtil;
+    private final JwtUserDetailsService userDetailsService;
+    private final RequisicionService requisicionService;
+
+    public JwtAuthenticationController(AuthenticationManager authenticationManager, JwtTokenUtil jwtTokenUtil,
+            JwtUserDetailsService userDetailsService, RequisicionService requisicionService) {
+        this.authenticationManager = authenticationManager;
+        this.jwtTokenUtil = jwtTokenUtil;
+        this.userDetailsService = userDetailsService;
+        this.requisicionService = requisicionService;
+    }
+
+    @PostMapping("/login")
+    public ResponseEntity<?> loginCanonical(@RequestBody JwtRequestDTO req) throws Exception {
+        if (req == null || req.getUsername() == null || req.getUsername().isBlank()
+                || req.getPassword() == null || req.getPassword().isBlank()) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("El usuario y la contraseña son obligatorios");
+        }
+        try {
+            authenticationManager
+                    .authenticate(new UsernamePasswordAuthenticationToken(req.getUsername(), req.getPassword()));
+        } catch (DisabledException e) {
+            throw new Exception("USER_DISABLED", e);
+        } catch (BadCredentialsException e) {
+            throw new Exception("INVALID_CREDENTIALS", e);
+        }
+        UserDetails ud = userDetailsService.loadUserByUsername(req.getUsername());
+        String token = jwtTokenUtil.generateToken(ud);
+        JwtResponseDTO resp = new JwtResponseDTO();
+        resp.setJwttoken(token);
+        return ResponseEntity.ok(resp);
+    }
+
+    @PostMapping("/api/auth/login")
+    public ResponseEntity<?> login(@RequestBody JwtRequestDTO req) throws Exception {
+        if (req == null || req.getUsername() == null || req.getUsername().isBlank()
+                || req.getPassword() == null || req.getPassword().isBlank()) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("El usuario y la contraseña son obligatorios");
+        }
+        try {
+            authenticationManager
+                    .authenticate(new UsernamePasswordAuthenticationToken(req.getUsername(), req.getPassword()));
+        } catch (DisabledException e) {
+            throw new Exception("USER_DISABLED", e);
+        } catch (BadCredentialsException e) {
+            throw new Exception("INVALID_CREDENTIALS", e);
+        }
+        UserDetails ud = userDetailsService.loadUserByUsername(req.getUsername());
+        String token = jwtTokenUtil.generateToken(ud);
+        List<String> socs = requisicionService.listarCodSociedades();
+        JwtResponseSociedadDTO resp = new JwtResponseSociedadDTO();
+        resp.setToken(token);
+        resp.setUsername(req.getUsername());
+        resp.setSociedades(socs);
+        resp.setSociedadActual(socs.isEmpty() ? null : socs.get(0));
+        return ResponseEntity.ok(resp);
+    }
 }

@@ -2,7 +2,7 @@
 package com.evolutionerp.repositories;
 
 import com.evolutionerp.entities.EnumRangos;
-import com.evolutionerp.entities.EnumRangosId;
+import com.evolutionerp.entities.EnumRangos.EnumRangosId;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 

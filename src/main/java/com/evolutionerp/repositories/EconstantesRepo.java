@@ -2,7 +2,7 @@
 package com.evolutionerp.repositories;
 
 import com.evolutionerp.entities.Econstantes;
-import com.evolutionerp.entities.EconstantesId;
+import com.evolutionerp.entities.Econstantes.EconstantesId;
 import java.util.List;
 
 public interface EconstantesRepo extends IGenericRepo<Econstantes, EconstantesId> {

@@ -4,14 +4,16 @@ import java.io.Serializable;
 
 public class JwtResponseDTO implements Serializable {
 
-    private final String jwttoken;
+    private String jwttoken;
+
+    public JwtResponseDTO() {
+    }
 
     public String getJwttoken() {
         return jwttoken;
     }
 
-    public JwtResponseDTO(String jwttoken) {
-        super();
+    public void setJwttoken(String jwttoken) {
         this.jwttoken = jwttoken;
     }
 

@@ -4,9 +4,9 @@ package com.evolutionerp.servicesimplements;
 import com.evolutionerp.dtos.*;
 import com.evolutionerp.exception.ModelNotFoundException;
 import com.evolutionerp.entities.*;
+import com.evolutionerp.entities.MmRequisCab.MmRequisCabId;
 import com.evolutionerp.repositories.*;
 import com.evolutionerp.util.MapperUtil;
-import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -15,15 +15,21 @@ import java.time.LocalDateTime;
 import java.util.List;
 
 @Service
-@RequiredArgsConstructor
-public class RequisicionServiceImpl implements com.evolutionerp.service.RequisicionService {
+public class RequisicionServiceImpl implements com.evolutionerp.servicesinterfaces.RequisicionService {
   private final MmRequisCabRepo cabRepo;
   private final MmRequisDetRepo detRepo;
-  private final EcCostoRepo costoRepo;
-  private final EconstantesRepo constRepo;
   private final EsociedadRepo socRepo;
   private final EnumRangosRepo rangosRepo;
   private final MapperUtil mapper;
+
+  public RequisicionServiceImpl(MmRequisCabRepo cabRepo, MmRequisDetRepo detRepo,
+      EsociedadRepo socRepo, EnumRangosRepo rangosRepo, MapperUtil mapper) {
+    this.cabRepo = cabRepo;
+    this.detRepo = detRepo;
+    this.socRepo = socRepo;
+    this.rangosRepo = rangosRepo;
+    this.mapper = mapper;
+  }
 
   @Transactional
   public MmRequisCabDTO crear(MmRequisCabDTO dto, String username) {
@@ -103,8 +109,12 @@ public class RequisicionServiceImpl implements com.evolutionerp.service.Requisic
     cabRepo.save(cab);
   }
 
+  @Transactional
   public void eliminar(String codSoc, String nroDoc) {
-    cabRepo.deleteById(new MmRequisCabId(codSoc, nroDoc));
+    MmRequisCabId id = new MmRequisCabId(codSoc, nroDoc);
+    if (!cabRepo.existsById(id))
+      throw new ModelNotFoundException("No existe " + nroDoc);
+    cabRepo.deleteById(id);
   }
 
   @Transactional(readOnly = true)
@@ -114,21 +124,16 @@ public class RequisicionServiceImpl implements com.evolutionerp.service.Requisic
     return cabRepo.filtrar(codSoc, estado, cencos, prio, fecIni, fecFin, qq, pageable).map(this::toDTO);
   }
 
-  public List<EcCostoDTO> listarCentros(String codSoc) {
-    return mapper.mapList(costoRepo.findByCodSociedad(codSoc), EcCostoDTO.class);
+  @Override
+  @Transactional(readOnly = true)
+  public boolean existeSociedad(String codSociedad) {
+    return codSociedad != null && socRepo.existsById(codSociedad);
   }
 
-  public List<EconstantesDTO> listarPrioridades(String codSoc) {
-    return mapper.mapList(constRepo.findByCodSociedadAndApp(codSoc, "PRIO"), EconstantesDTO.class);
-  }
-
-  public List<EsociedadDTO> listarSociedades() {
-    return mapper.mapList(socRepo.findAll(), EsociedadDTO.class);
-  }
-
-  public List<MmRequisCabDTO> listarSociedadesPorUsuario(String username) {
-    return listarSociedades().stream().map(s -> MmRequisCabDTO.builder().codSociedad(s.getCodSociedad()).build())
-        .toList();
+  @Override
+  @Transactional(readOnly = true)
+  public List<String> listarCodSociedades() {
+    return socRepo.findAll().stream().map(s -> s.getCodSociedad()).toList();
   }
 
   private MmRequisCabDTO toDTO(MmRequisCab cab) {

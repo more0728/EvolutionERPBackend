@@ -1,5 +1,5 @@
 
-package com.evolutionerp.service;
+package com.evolutionerp.servicesinterfaces;
 
 import com.evolutionerp.dtos.*;
 import org.springframework.data.domain.Page;
@@ -21,11 +21,8 @@ public interface RequisicionService {
   Page<MmRequisCabDTO> listar(String codSoc, String estado, String cencos, String prio, LocalDateTime fecIni,
       LocalDateTime fecFin, String q, Pageable pageable);
 
-  List<EcCostoDTO> listarCentros(String codSoc);
+  // Estilo KitchenHack: los controllers validan FK vía servicio, nunca vía repository.
+  boolean existeSociedad(String codSociedad);
 
-  List<EconstantesDTO> listarPrioridades(String codSoc);
-
-  List<EsociedadDTO> listarSociedades();
-
-  List<MmRequisCabDTO> listarSociedadesPorUsuario(String username);
+  List<String> listarCodSociedades();
 }

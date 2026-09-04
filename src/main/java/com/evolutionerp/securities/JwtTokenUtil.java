@@ -2,7 +2,6 @@ package com.evolutionerp.securities;
 
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
-import io.jsonwebtoken.SignatureAlgorithm;
 import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
 import org.springframework.beans.factory.annotation.Value;
@@ -16,6 +15,8 @@ import java.util.Map;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
+// Estilo KitchenHack: JWT HS512 5h (expiration 18000000ms), claims{roles}, subject=username.
+// API jjwt 0.13.0 (parser verifyWith / parseSignedClaims / SIG.HS512).
 @Component
 public class JwtTokenUtil {
 
@@ -42,11 +43,11 @@ public class JwtTokenUtil {
     }
 
     private Claims getAllClaims(String token) {
-        return Jwts.parserBuilder()
-                .setSigningKey(getSigningKey())
+        return Jwts.parser()
+                .verifyWith(getSigningKey())
                 .build()
-                .parseClaimsJws(token)
-                .getBody();
+                .parseSignedClaims(token)
+                .getPayload();
     }
 
     private boolean isExpired(String token) {
@@ -72,11 +73,11 @@ public class JwtTokenUtil {
         Date now = new Date();
         Date exp = new Date(now.getTime() + expiration);
         return Jwts.builder()
-                .setClaims(claims)
-                .setSubject(username)
-                .setIssuedAt(now)
-                .setExpiration(exp)
-                .signWith(getSigningKey(), SignatureAlgorithm.HS512)
+                .claims(claims)
+                .subject(username)
+                .issuedAt(now)
+                .expiration(exp)
+                .signWith(getSigningKey(), Jwts.SIG.HS512)
                 .compact();
     }
 

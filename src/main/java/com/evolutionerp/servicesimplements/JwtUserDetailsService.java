@@ -1,6 +1,5 @@
 package com.evolutionerp.servicesimplements;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -16,8 +15,11 @@ import java.util.List;
 //Clase 2
 @Service
 public class JwtUserDetailsService implements UserDetailsService {
-    @Autowired
-    private IUserRepository repo;
+    private final IUserRepository repo;
+
+    public JwtUserDetailsService(IUserRepository repo) {
+        this.repo = repo;
+    }
 
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
@@ -29,8 +31,13 @@ public class JwtUserDetailsService implements UserDetailsService {
 
         List<GrantedAuthority> roles = new ArrayList<>();
 
+        // Estilo KitchenHack: GrantedAuthority "ROLE_<NOMBRE_UPPER>".
         user.getRoles().forEach(rol -> {
-            roles.add(new SimpleGrantedAuthority(rol.getRol()));
+            String r = rol.getRol() == null ? "" : rol.getRol().trim().toUpperCase();
+            if (!r.startsWith("ROLE_")) {
+                r = "ROLE_" + r;
+            }
+            roles.add(new SimpleGrantedAuthority(r));
         });
 
         UserDetails ud = new org.springframework.security.core.userdetails.User(user.getUsername(), user.getPassword(),

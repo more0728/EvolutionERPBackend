@@ -22,6 +22,17 @@ public class Users implements Serializable {
     @JoinColumn(name = "user_id")
     private List<Role> roles;
 
+    public Users() {
+    }
+
+    public Users(Long id, String username, String password, Boolean enabled, List<Role> roles) {
+        this.id = id;
+        this.username = username;
+        this.password = password;
+        this.enabled = enabled;
+        this.roles = roles;
+    }
+
     public Long getId() {
         return id;
     }

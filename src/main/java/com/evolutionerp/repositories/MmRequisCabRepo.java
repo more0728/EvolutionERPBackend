@@ -2,7 +2,7 @@
 package com.evolutionerp.repositories;
 
 import com.evolutionerp.entities.MmRequisCab;
-import com.evolutionerp.entities.MmRequisCabId;
+import com.evolutionerp.entities.MmRequisCab.MmRequisCabId;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.Query;
