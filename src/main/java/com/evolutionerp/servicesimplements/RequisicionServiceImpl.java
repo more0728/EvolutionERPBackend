@@ -18,18 +18,14 @@ import java.util.List;
 public class RequisicionServiceImpl implements com.evolutionerp.servicesinterfaces.RequisicionService {
   private final MmRequisCabRepo cabRepo;
   private final MmRequisDetRepo detRepo;
-  private final EcCostoRepo costoRepo;
-  private final EconstantesRepo constRepo;
   private final EsociedadRepo socRepo;
   private final EnumRangosRepo rangosRepo;
   private final MapperUtil mapper;
 
-  public RequisicionServiceImpl(MmRequisCabRepo cabRepo, MmRequisDetRepo detRepo, EcCostoRepo costoRepo,
-      EconstantesRepo constRepo, EsociedadRepo socRepo, EnumRangosRepo rangosRepo, MapperUtil mapper) {
+  public RequisicionServiceImpl(MmRequisCabRepo cabRepo, MmRequisDetRepo detRepo,
+      EsociedadRepo socRepo, EnumRangosRepo rangosRepo, MapperUtil mapper) {
     this.cabRepo = cabRepo;
     this.detRepo = detRepo;
-    this.costoRepo = costoRepo;
-    this.constRepo = constRepo;
     this.socRepo = socRepo;
     this.rangosRepo = rangosRepo;
     this.mapper = mapper;
@@ -128,21 +124,6 @@ public class RequisicionServiceImpl implements com.evolutionerp.servicesinterfac
     return cabRepo.filtrar(codSoc, estado, cencos, prio, fecIni, fecFin, qq, pageable).map(this::toDTO);
   }
 
-  @Transactional(readOnly = true)
-  public List<EcCostoDTO> listarCentros(String codSoc) {
-    return mapper.mapList(costoRepo.findByCodSociedad(codSoc), EcCostoDTO.class);
-  }
-
-  @Transactional(readOnly = true)
-  public List<EconstantesDTO> listarPrioridades(String codSoc) {
-    return mapper.mapList(constRepo.findByCodSociedadAndApp(codSoc, "PRIO"), EconstantesDTO.class);
-  }
-
-  @Transactional(readOnly = true)
-  public List<EsociedadDTO> listarSociedades() {
-    return mapper.mapList(socRepo.findAll(), EsociedadDTO.class);
-  }
-
   @Override
   @Transactional(readOnly = true)
   public boolean existeSociedad(String codSociedad) {
@@ -153,14 +134,6 @@ public class RequisicionServiceImpl implements com.evolutionerp.servicesinterfac
   @Transactional(readOnly = true)
   public List<String> listarCodSociedades() {
     return socRepo.findAll().stream().map(s -> s.getCodSociedad()).toList();
-  }
-
-  public List<MmRequisCabDTO> listarSociedadesPorUsuario(String username) {
-    return listarSociedades().stream().map(s -> {
-      MmRequisCabDTO dto = new MmRequisCabDTO();
-      dto.setCodSociedad(s.getCodSociedad());
-      return dto;
-    }).toList();
   }
 
   private MmRequisCabDTO toDTO(MmRequisCab cab) {

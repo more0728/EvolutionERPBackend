@@ -1,6 +1,7 @@
 
 package com.evolutionerp.exception;
 
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.*;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.*;
@@ -13,6 +14,15 @@ public class ResponseExceptionHandler {
   public ResponseEntity<CustomErrorRecord> handleNotFound(ModelNotFoundException ex, WebRequest req) {
     return new ResponseEntity<>(new CustomErrorRecord(LocalDateTime.now(), ex.getMessage(), req.getDescription(false)),
         HttpStatus.NOT_FOUND);
+  }
+
+  // Skill §A6: conflicto de integridad (duplicado/FK) → 409, sin matchear strings SQL.
+  @ExceptionHandler({ DataIntegrityViolationException.class, ConflictException.class })
+  public ResponseEntity<CustomErrorRecord> handleConflict(RuntimeException ex, WebRequest req) {
+    String msg = ex instanceof ConflictException ? ex.getMessage() : "Registro duplicado o conflicto de integridad";
+    return new ResponseEntity<>(
+        new CustomErrorRecord(LocalDateTime.now(), msg, req.getDescription(false)),
+        HttpStatus.CONFLICT);
   }
 
   @ExceptionHandler(MethodArgumentNotValidException.class)

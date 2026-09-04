@@ -2,9 +2,6 @@
 package com.evolutionerp.controllers;
 
 import com.evolutionerp.dtos.MmRequisCabDTO;
-import com.evolutionerp.dtos.EcCostoDTO;
-import com.evolutionerp.dtos.EconstantesDTO;
-import com.evolutionerp.dtos.EsociedadDTO;
 import com.evolutionerp.servicesinterfaces.RequisicionService;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -14,7 +11,6 @@ import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 import jakarta.validation.Valid;
 import java.time.LocalDateTime;
-import java.util.List;
 
 @RestController
 @RequestMapping("/api/requisiciones")
@@ -60,20 +56,5 @@ public class RequisicionController {
       @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime fecFin,
       @RequestParam(required = false) String q, Pageable pageable) {
     return service.listar(codSociedad, estado, cencos, prio, fecIni, fecFin, q, pageable);
-  }
-
-  @GetMapping("/listas/centros/{codSoc}")
-  public List<EcCostoDTO> centros(@PathVariable String codSoc) {
-    return service.listarCentros(codSoc);
-  }
-
-  @GetMapping("/listas/prioridades/{codSoc}")
-  public List<EconstantesDTO> prioridades(@PathVariable String codSoc) {
-    return service.listarPrioridades(codSoc);
-  }
-
-  @GetMapping("/listas/sociedades")
-  public List<EsociedadDTO> sociedades() {
-    return service.listarSociedades();
   }
 }
