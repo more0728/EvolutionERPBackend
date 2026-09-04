@@ -41,7 +41,7 @@ public class WebSecurityConfig {
 
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
-        // Skill modelo-backend §S1: STATELESS + permitAll mínimo; resto authenticated.
+
         // Divergencia ERP aprobada: se permite POST /api/auth/login (compat) y
         // GET /api/auth/sociedades (lista pública para la pantalla de login).
         // POST /api/auth/sociedad SÍ exige auth (re-emite token con sociedad).

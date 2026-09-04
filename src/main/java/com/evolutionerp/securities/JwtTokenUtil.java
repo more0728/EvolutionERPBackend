@@ -15,8 +15,6 @@ import java.util.Map;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
-// Estilo KitchenHack: JWT HS512 5h (expiration 18000000ms), claims{roles}, subject=username.
-// API jjwt 0.13.0 (parser verifyWith / parseSignedClaims / SIG.HS512).
 @Component
 public class JwtTokenUtil {
 

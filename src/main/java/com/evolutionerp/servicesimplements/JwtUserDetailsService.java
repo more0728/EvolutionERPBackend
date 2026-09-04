@@ -31,7 +31,6 @@ public class JwtUserDetailsService implements UserDetailsService {
 
         List<GrantedAuthority> roles = new ArrayList<>();
 
-        // Estilo KitchenHack: GrantedAuthority "ROLE_<NOMBRE_UPPER>".
         user.getRoles().forEach(rol -> {
             String r = rol.getRol() == null ? "" : rol.getRol().trim().toUpperCase();
             if (!r.startsWith("ROLE_")) {

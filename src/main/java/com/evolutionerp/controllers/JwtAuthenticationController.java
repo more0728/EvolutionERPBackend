@@ -20,8 +20,6 @@ import com.evolutionerp.securities.JwtTokenUtil;
 import com.evolutionerp.servicesimplements.JwtUserDetailsService;
 import com.evolutionerp.servicesinterfaces.RequisicionService;
 
-// Estilo KitchenHack: POST /login → 200 {jwttoken}. Sin @CrossOrigin (CORS global).
-// POST /api/auth/login se mantiene por compatibilidad ERP (incluye sociedades).
 @RestController
 public class JwtAuthenticationController {
 
@@ -39,7 +37,7 @@ public class JwtAuthenticationController {
     }
 
     @PostMapping("/login")
-    public ResponseEntity<?> loginCanonical(@RequestBody JwtRequestDTO req) throws Exception {
+    public ResponseEntity<?> loginCanonical(@RequestBody JwtRequestDTO req) {
         if (req == null || req.getUsername() == null || req.getUsername().isBlank()
                 || req.getPassword() == null || req.getPassword().isBlank()) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("El usuario y la contraseña son obligatorios");
@@ -48,9 +46,9 @@ public class JwtAuthenticationController {
             authenticationManager
                     .authenticate(new UsernamePasswordAuthenticationToken(req.getUsername(), req.getPassword()));
         } catch (DisabledException e) {
-            throw new Exception("USER_DISABLED", e);
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).body("Usuario deshabilitado");
         } catch (BadCredentialsException e) {
-            throw new Exception("INVALID_CREDENTIALS", e);
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Usuario o contraseña incorrectos");
         }
         UserDetails ud = userDetailsService.loadUserByUsername(req.getUsername());
         String token = jwtTokenUtil.generateToken(ud);
@@ -60,7 +58,7 @@ public class JwtAuthenticationController {
     }
 
     @PostMapping("/api/auth/login")
-    public ResponseEntity<?> login(@RequestBody JwtRequestDTO req) throws Exception {
+    public ResponseEntity<?> login(@RequestBody JwtRequestDTO req) {
         if (req == null || req.getUsername() == null || req.getUsername().isBlank()
                 || req.getPassword() == null || req.getPassword().isBlank()) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("El usuario y la contraseña son obligatorios");
@@ -69,9 +67,9 @@ public class JwtAuthenticationController {
             authenticationManager
                     .authenticate(new UsernamePasswordAuthenticationToken(req.getUsername(), req.getPassword()));
         } catch (DisabledException e) {
-            throw new Exception("USER_DISABLED", e);
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).body("Usuario deshabilitado");
         } catch (BadCredentialsException e) {
-            throw new Exception("INVALID_CREDENTIALS", e);
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Usuario o contraseña incorrectos");
         }
         UserDetails ud = userDetailsService.loadUserByUsername(req.getUsername());
         String token = jwtTokenUtil.generateToken(ud);

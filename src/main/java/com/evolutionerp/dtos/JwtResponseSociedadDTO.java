@@ -2,7 +2,6 @@ package com.evolutionerp.dtos;
 
 import java.util.List;
 
-// Estilo KitchenHack: DTO plano con getters/setters manuales (sin Lombok, sin constructores con args).
 public class JwtResponseSociedadDTO {
     private String token;
     private String username;

@@ -18,8 +18,7 @@ import com.evolutionerp.dtos.JwtResponseSociedadDTO;
 import com.evolutionerp.securities.JwtTokenUtil;
 import com.evolutionerp.servicesinterfaces.RequisicionService;
 
-// Estilo KitchenHack: Controller nunca toca Repository; valida FK vía servicio.
-// CORS global en util/CorsConfig (sin @CrossOrigin por controller).
+
 @RestController
 @RequestMapping("/api/auth")
 public class AuthSociedadController {

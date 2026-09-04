@@ -1,11 +1,10 @@
 package com.evolutionerp.dtos;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.validation.constraints.*;
 import java.math.BigDecimal;
 
-// Estilo KitchenHack: DTO plano con getters/setters manuales (sin Lombok).
-// Completo: incluye claves (codSociedad/nroDoc) y opcMant que faltaban;
-// la relación 'cab' no se expone (solo FKs planas).
+
 public class MmRequisDetDTO {
   private Long nroItem;
   @Size(max = 42)
@@ -49,6 +48,9 @@ public class MmRequisDetDTO {
     this.codMaterial = codMaterial;
   }
 
+  // JavaBeans: getCUnidad() serializaría como "CUnidad"/"cunidad".
+  // Se fija el nombre JSON del contrato front-backend.
+  @JsonProperty("cUnidad")
   public String getCUnidad() {
     return cUnidad;
   }

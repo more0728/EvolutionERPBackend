@@ -7,7 +7,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
-// Una entidad, un controller: CRUD completo de Esociedad (familia skill §A1/A5).
+
 @RestController
 @RequestMapping("/api/sociedades")
 public class EsociedadController {

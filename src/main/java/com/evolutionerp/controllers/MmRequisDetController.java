@@ -7,9 +7,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-// Una entidad, un controller: CRUD completo de MmRequisDet (familia skill §A1/A5).
-// Clave compuesta (codSociedad, nroDoc, nroItem): el padre va en el path,
-// el nroItem se asigna correlativo al crear.
 @RestController
 @RequestMapping("/api/requisicion-detalles")
 public class MmRequisDetController {
