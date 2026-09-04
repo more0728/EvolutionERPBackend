@@ -2,7 +2,6 @@ package com.evolutionerp.dtos;
 
 import jakarta.validation.constraints.*;
 
-// Estilo KitchenHack: DTO plano, FK como Long (tipo de PK vigente en users).
 public class RoleDTO {
   private Long id;
   @Size(max = 50)

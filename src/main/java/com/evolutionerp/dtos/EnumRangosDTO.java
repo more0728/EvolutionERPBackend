@@ -2,8 +2,6 @@ package com.evolutionerp.dtos;
 
 import jakarta.validation.constraints.*;
 
-// Estilo KitchenHack: DTO plano con getters/setters manuales (sin Lombok).
-// nroDoc es generado por la BD (columna GENERATED), solo lectura.
 public class EnumRangosDTO {
   @NotBlank
   @Size(max = 10)

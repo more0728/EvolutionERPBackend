@@ -4,8 +4,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.validation.constraints.*;
 import java.util.List;
 
-// Skill modelo-backend §S4: password write-only — jamás serializado ni logueado.
-// La entidad guarda solo el hash BCrypt; roles como nombres planos.
+
 public class UsersDTO {
   private Long id;
   @Size(max = 30)

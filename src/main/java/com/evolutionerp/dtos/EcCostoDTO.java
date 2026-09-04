@@ -1,6 +1,5 @@
 package com.evolutionerp.dtos;
 
-// Estilo KitchenHack: DTO plano con getters/setters manuales (sin Lombok).
 public class EcCostoDTO {
     private String codSociedad;
     private String ccodCencos;

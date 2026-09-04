@@ -6,7 +6,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-// Una entidad, un controller: CRUD completo de EnumRangos (familia skill §A1/A5).
 @RestController
 @RequestMapping("/api/rangos")
 public class EnumRangosController {

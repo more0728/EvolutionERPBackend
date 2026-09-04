@@ -2,8 +2,6 @@ package com.evolutionerp.dtos;
 
 import java.time.LocalDateTime;
 
-// Estilo KitchenHack: DTO plano con getters/setters manuales (sin Lombok).
-// Completo: incluye país/idioma/nombre comercial/opcMant/auditoría que faltaban.
 public class EsociedadDTO {
     private String codSociedad;
     private String nomSociedad;

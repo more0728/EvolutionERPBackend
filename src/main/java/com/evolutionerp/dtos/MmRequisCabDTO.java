@@ -5,8 +5,6 @@ import jakarta.validation.Valid;
 import java.time.LocalDateTime;
 import java.util.List;
 
-// Estilo KitchenHack: DTO plano con getters/setters manuales (sin Lombok).
-// Completo: incluye opcMant/app/auditoría que faltaban respecto a MmRequisCab.
 public class MmRequisCabDTO {
   @NotBlank
   @Size(max = 10)

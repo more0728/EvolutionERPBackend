@@ -15,7 +15,7 @@ import com.evolutionerp.servicesimplements.JwtUserDetailsService;
 
 import java.io.IOException;
 
-//Clase 6
+
 @Component
 public class JwtRequestFilter extends OncePerRequestFilter {
     private final JwtUserDetailsService jwtUserDetailsService;
@@ -58,16 +58,40 @@ public class JwtRequestFilter extends OncePerRequestFilter {
             if (jwtTokenUtil.validateToken(jwtToken, userDetails)) {
 
                 UsernamePasswordAuthenticationToken usernamePasswordAuthenticationToken = new UsernamePasswordAuthenticationToken(
-                        userDetails, null, userDetails.getAuthorities());
+                        userDetails, jwtToken, userDetails.getAuthorities());
                 usernamePasswordAuthenticationToken
                         .setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
                 // After setting the Authentication in the context, we specify
                 // that the current user is authenticated. So it passes the
                 // Spring Security Configurations successfully.
                 SecurityContextHolder.getContext().setAuthentication(usernamePasswordAuthenticationToken);
+
+                // Excel punto 10: después del login hay que seleccionar sociedad.
+                // Todo /api/** (salvo endpoints públicos de auth/docs) exige un
+                // token que ya traiga la sociedad; si no, 403.
+                if (requiereSociedad(request.getRequestURI())
+                        && jwtTokenUtil.getSociedadFromToken(jwtToken) == null) {
+                    response.setStatus(HttpServletResponse.SC_FORBIDDEN);
+                    response.setContentType("application/json");
+                    response.getWriter().write(
+                            "{\"message\":\"Debe seleccionar una sociedad antes de operar\"}");
+                    return;
+                }
             }
         }
         chain.doFilter(request, response);
+    }
+
+    private boolean requiereSociedad(String uri) {
+        if (uri == null || !uri.startsWith("/api/"))
+            return false;
+        return !uri.startsWith("/api/auth/login")
+                && !uri.startsWith("/api/auth/sociedad")
+                && !uri.startsWith("/api/auth/sociedades")
+                && !uri.startsWith("/v3/api-docs")
+                && !uri.startsWith("/swagger-ui")
+                && !uri.startsWith("/webjars")
+                && !uri.startsWith("/actuator");
     }
 
 }

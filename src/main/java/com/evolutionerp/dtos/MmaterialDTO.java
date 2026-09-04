@@ -1,6 +1,5 @@
 package com.evolutionerp.dtos;
 
-// Estilo KitchenHack: DTO plano sin Lombok, getters/setters manuales.
 public class MmaterialDTO {
     private String codMaterial;
     private String nomMaterial;
@@ -26,6 +25,9 @@ public class MmaterialDTO {
         this.nomMaterial = nomMaterial;
     }
 
+    // JavaBeans: getCUnidad() serializaría como "CUnidad"/"cunidad".
+    // Se fija el nombre JSON del contrato front-backend.
+    @com.fasterxml.jackson.annotation.JsonProperty("cUnidad")
     public String getCUnidad() {
         return cUnidad;
     }

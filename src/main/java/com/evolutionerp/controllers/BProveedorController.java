@@ -6,7 +6,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-// Una entidad, un controller: CRUD completo de BProveedor (familia skill §A1/A5).
+
 @RestController
 @RequestMapping("/api/proveedores")
 public class BProveedorController {

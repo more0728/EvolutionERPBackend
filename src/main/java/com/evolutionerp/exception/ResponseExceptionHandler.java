@@ -6,6 +6,7 @@ import org.springframework.http.*;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.context.request.WebRequest;
+import org.springframework.web.server.ResponseStatusException;
 import java.time.LocalDateTime;
 
 @RestControllerAdvice
@@ -14,6 +15,16 @@ public class ResponseExceptionHandler {
   public ResponseEntity<CustomErrorRecord> handleNotFound(ModelNotFoundException ex, WebRequest req) {
     return new ResponseEntity<>(new CustomErrorRecord(LocalDateTime.now(), ex.getMessage(), req.getDescription(false)),
         HttpStatus.NOT_FOUND);
+  }
+
+  // Respeta el estado de ResponseStatusException (403 de sociedad, etc.)
+  // en lugar de caer en el 500 genérico.
+  @ExceptionHandler(ResponseStatusException.class)
+  public ResponseEntity<CustomErrorRecord> handleStatus(ResponseStatusException ex, WebRequest req) {
+    String msg = ex.getStatusCode().value() + " " + ex.getReason();
+    return new ResponseEntity<>(
+        new CustomErrorRecord(LocalDateTime.now(), msg, req.getDescription(false)),
+        ex.getStatusCode());
   }
 
   // Skill §A6: conflicto de integridad (duplicado/FK) → 409, sin matchear strings SQL.
